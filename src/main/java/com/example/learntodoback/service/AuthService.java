@@ -1,7 +1,9 @@
 package com.example.learntodoback.service;
 
 import com.example.learntodoback.dto.auth.AuthRequestDto;
+import com.example.learntodoback.dto.auth.AuthResponseDto;
 import com.example.learntodoback.dto.auth.RegisterRequestDto;
+import com.example.learntodoback.dto.auth.RegisterResponseDto;
 import com.example.learntodoback.entity.User;
 import com.example.learntodoback.exception.AuthException;
 import com.example.learntodoback.repository.UserRepository;
@@ -19,7 +21,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    public String register(RegisterRequestDto request) {
+    public RegisterResponseDto register(RegisterRequestDto request) {
         if (userRepository.existsByUsername(request.getUsername()) || userRepository.existsByEmail(request.getEmail())) {
             throw new AuthException("Имя пользователя или адрес электронной почты уже занято!");
         }
@@ -32,11 +34,18 @@ public class AuthService {
 
         userRepository.save(user);
         String token = jwtUtil.generateToken(user.getUsername());
+        RegisterResponseDto registerResponseDto = RegisterResponseDto.builder()
+                .id(user.getId())
+                .username(request.getUsername())
+                .email(request.getEmail())
+                .token(token)
+                .build();
+
         log.info("JWT Token: {}", token);
-        return token;
+        return registerResponseDto;
     }
 
-    public String login(AuthRequestDto request) {
+    public AuthResponseDto login(AuthRequestDto request) {
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new AuthException("Неверное имя пользователя или пароль"));
 
@@ -44,7 +53,13 @@ public class AuthService {
             throw new AuthException("Неверное имя пользователя или пароль");
         }
         String token = jwtUtil.generateToken(user.getUsername());
+        AuthResponseDto authResponseDto = AuthResponseDto.builder()
+                .id(user.getId())
+                .username(request.getUsername())
+                .token(token)
+                .build();
+
         log.info("JWT Token: {}", token);
-        return token;
+        return authResponseDto;
     }
 }
