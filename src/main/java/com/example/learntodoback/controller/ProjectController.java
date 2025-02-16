@@ -14,32 +14,32 @@ import java.util.List;
 public class ProjectController {
     private final ProjectService projectService;
 
-    @PostMapping
-    public ResponseEntity<?> createProject(@RequestBody ProjectDto projectDto) {
-        ProjectDto result = projectService.createProject(projectDto);
+    @PostMapping("/user/{userId}")
+    public ResponseEntity<?> createProject(@PathVariable Long userId, @RequestBody ProjectDto projectDto) {
+        ProjectDto result = projectService.createProject(userId, projectDto);
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping
-    public ResponseEntity<?> getProjectsForCurrentUser() {
-        List<ProjectDto> projectDtos = projectService.getProjectsForCurrentUser();
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<?> getProjectsForUser(@PathVariable Long userId) {
+        List<ProjectDto> projectDtos = projectService.getProjectsForUser(userId);
         return ResponseEntity.ok(projectDtos);
     }
 
-    @GetMapping("/{projectId}")
-    public ResponseEntity<?> getProjectById(@PathVariable Long projectId) {
-        ProjectDto result = projectService.getProjectById(projectId);
+    @GetMapping("/user/{userId}/{projectId}")
+    public ResponseEntity<?> getProjectById(@PathVariable Long userId, @PathVariable Long projectId) {
+        ProjectDto result = projectService.getProjectById(userId, projectId);
         return ResponseEntity.ok(result);
     }
 
-    @PutMapping("/{projectId}")
-    public ResponseEntity<?> updateProject(@PathVariable Long projectId, @RequestBody ProjectDto projectDto) {
-        ProjectDto updatedProject = projectService.updateProject(projectId, projectDto);
+    @PutMapping("/user/{userId}/{projectId}")
+    public ResponseEntity<?> updateProject(@PathVariable Long userId, @PathVariable Long projectId, @RequestBody ProjectDto projectDto) {
+        ProjectDto updatedProject = projectService.updateProject(userId, projectId, projectDto);
         return ResponseEntity.ok(updatedProject);
     }
 
-    @DeleteMapping("/{projectId}")
-    public void deleteProject(@PathVariable Long projectId) {
-        projectService.deleteProject(projectId);
+    @DeleteMapping("/user/{userId}/{projectId}")
+    public void deleteProject(@PathVariable Long userId, @PathVariable Long projectId) {
+        projectService.deleteProject(userId, projectId);
     }
 }

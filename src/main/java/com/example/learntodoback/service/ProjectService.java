@@ -6,6 +6,7 @@ import com.example.learntodoback.entity.User;
 import com.example.learntodoback.exception.BusinessException;
 import com.example.learntodoback.mapper.ProjectMapper;
 import com.example.learntodoback.repository.ProjectRepository;
+import com.example.learntodoback.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,17 +17,17 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ProjectService {
-
     private final ProjectRepository projectRepository;
-    private final UserService userService;
+    private final UserRepository userRepository;
     private final ProjectMapper projectMapper;
 
     /**
-     * Создание нового проекта для текущего авторизованного пользователя.
+     * Создание нового проекта для пользователя по ID.
      */
     @Transactional
-    public ProjectDto createProject(ProjectDto projectDto) {
-        User user = userService.getCurrentUser();
+    public ProjectDto createProject(Long userId, ProjectDto projectDto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException("Пользователь не найден"));
 
         Project project = projectMapper.toEntity(projectDto);
         project.setUser(user);
@@ -39,19 +40,22 @@ public class ProjectService {
     }
 
     /**
-     * Получение всех проектов текущего пользователя.
+     * Получение всех проектов пользователя по ID.
      */
-    public List<ProjectDto> getProjectsForCurrentUser() {
-        User user = userService.getCurrentUser();
+    public List<ProjectDto> getProjectsForUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException("Пользователь не найден"));
+
         List<Project> projects = projectRepository.findAllByUser(user);
         return projectMapper.toListDto(projects);
     }
 
     /**
-     * Получение одного проекта по ID для текущего пользователя.
+     * Получение одного проекта по ID для пользователя.
      */
-    public ProjectDto getProjectById(Long projectId) {
-        User user = userService.getCurrentUser();
+    public ProjectDto getProjectById(Long userId, Long projectId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException("Пользователь не найден"));
 
         Project project = projectRepository.findByIdAndUser(projectId, user)
                 .orElseThrow(() -> new BusinessException("Проект не найден"));
@@ -60,11 +64,12 @@ public class ProjectService {
     }
 
     /**
-     * Обновление проекта для текущего пользователя.
+     * Обновление проекта для пользователя по ID.
      */
     @Transactional
-    public ProjectDto updateProject(Long projectId, ProjectDto projectDto) {
-        User user = userService.getCurrentUser();
+    public ProjectDto updateProject(Long userId, Long projectId, ProjectDto projectDto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException("Пользователь не найден"));
 
         Project project = projectRepository.findByIdAndUser(projectId, user)
                 .orElseThrow(() -> new BusinessException("Проект не найден"));
@@ -77,13 +82,13 @@ public class ProjectService {
         return projectMapper.toDto(updatedProject);
     }
 
-
     /**
-     * Удаление проекта по ID для текущего пользователя.
+     * Удаление проекта по ID для пользователя.
      */
     @Transactional
-    public void deleteProject(Long projectId) {
-        User user = userService.getCurrentUser();
+    public void deleteProject(Long userId, Long projectId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException("Пользователь не найден"));
 
         Project project = projectRepository.findByIdAndUser(projectId, user)
                 .orElseThrow(() -> new BusinessException("Проект не найден"));
