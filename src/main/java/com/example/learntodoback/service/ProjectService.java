@@ -33,6 +33,7 @@ public class ProjectService {
         project.setUser(user);
         project.setCreatedAt(LocalDateTime.now());
         project.setUpdatedAt(LocalDateTime.now());
+        project.setData(projectDto.getData());
 
         Project savedProject = projectRepository.save(project);
 
@@ -76,6 +77,7 @@ public class ProjectService {
 
         project.setName(projectDto.getName());
         project.setUpdatedAt(LocalDateTime.now());
+        project.setData(projectDto.getData());
 
         Project updatedProject = projectRepository.save(project);
 

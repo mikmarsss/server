@@ -13,6 +13,5 @@ public class ProjectDto {
     private Long userId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
-   // private String body; какое то тело, надо решить как хранить
+    private String data;
 }
