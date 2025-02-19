@@ -1,10 +1,12 @@
 package com.example.learntodoback.service;
 
-import com.example.learntodoback.dto.ProjectDto;
+import com.example.learntodoback.dto.request.ProjectRequestDto;
+import com.example.learntodoback.dto.response.ProjectResponseDto;
 import com.example.learntodoback.entity.Project;
 import com.example.learntodoback.entity.User;
 import com.example.learntodoback.exception.BusinessException;
-import com.example.learntodoback.mapper.ProjectMapper;
+import com.example.learntodoback.mapper.request.ProjectRequestMapper;
+import com.example.learntodoback.mapper.response.ProjectResponseMapper;
 import com.example.learntodoback.repository.ProjectRepository;
 import com.example.learntodoback.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -19,69 +21,70 @@ import java.util.List;
 public class ProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
-    private final ProjectMapper projectMapper;
+    private final ProjectRequestMapper projectRequestMapper;
+    private final ProjectResponseMapper projectResponseMapper;
 
     /**
      * Создание нового проекта для пользователя по ID.
      */
     @Transactional
-    public ProjectDto createProject(Long userId, ProjectDto projectDto) {
+    public ProjectResponseDto createProject(Long userId, ProjectRequestDto projectRequestDto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException("Пользователь не найден"));
 
-        Project project = projectMapper.toEntity(projectDto);
+        Project project = projectRequestMapper.toEntity(projectRequestDto);
         project.setUser(user);
         project.setCreatedAt(LocalDateTime.now());
         project.setUpdatedAt(LocalDateTime.now());
-        project.setData(projectDto.getData());
+        project.setData(projectRequestDto.getData());
 
         Project savedProject = projectRepository.save(project);
 
-        return projectMapper.toDto(savedProject);
+        return projectResponseMapper.toDto(savedProject);
     }
 
     /**
      * Получение всех проектов пользователя по ID.
      */
-    public List<ProjectDto> getProjectsForUser(Long userId) {
+    public List<ProjectResponseDto> getProjectsForUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException("Пользователь не найден"));
 
         List<Project> projects = projectRepository.findAllByUser(user);
-        return projectMapper.toListDto(projects);
+        return projectResponseMapper.toListDto(projects);
     }
 
     /**
      * Получение одного проекта по ID для пользователя.
      */
-    public ProjectDto getProjectById(Long userId, Long projectId) {
+    public ProjectResponseDto getProjectById(Long userId, Long projectId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException("Пользователь не найден"));
 
         Project project = projectRepository.findByIdAndUser(projectId, user)
                 .orElseThrow(() -> new BusinessException("Проект не найден"));
 
-        return projectMapper.toDto(project);
+        return projectResponseMapper.toDto(project);
     }
 
     /**
      * Обновление проекта для пользователя по ID.
      */
     @Transactional
-    public ProjectDto updateProject(Long userId, Long projectId, ProjectDto projectDto) {
+    public ProjectResponseDto updateProject(Long userId, Long projectId, ProjectRequestDto projectRequestDto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException("Пользователь не найден"));
 
         Project project = projectRepository.findByIdAndUser(projectId, user)
                 .orElseThrow(() -> new BusinessException("Проект не найден"));
 
-        project.setName(projectDto.getName());
+        project.setName(projectRequestDto.getName());
         project.setUpdatedAt(LocalDateTime.now());
-        project.setData(projectDto.getData());
+        project.setData(projectRequestDto.getData());
 
         Project updatedProject = projectRepository.save(project);
 
-        return projectMapper.toDto(updatedProject);
+        return projectResponseMapper.toDto(updatedProject);
     }
 
     /**
