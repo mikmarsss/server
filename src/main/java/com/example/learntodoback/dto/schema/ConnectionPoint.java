@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-class ConnectionPoint {
+public class ConnectionPoint {
     private String component;
     private String pin;
 }
