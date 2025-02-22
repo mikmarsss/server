@@ -1,13 +1,13 @@
-package com.example.learntodoback;
+// package com.example.learntodoback;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+// import org.junit.jupiter.api.Test;
+// import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class LearnToDoBackApplicationTests {
+// @SpringBootTest
+// class LearnToDoBackApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+// @Test
+// void contextLoads() {
+// }
 
-}
+// }

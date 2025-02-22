@@ -15,31 +15,33 @@ import java.util.List;
 public class ProjectController {
     private final ProjectService projectService;
 
-    @PostMapping("/user/{userId}")
-    public ResponseEntity<?> createProject(@PathVariable Long userId, @RequestBody ProjectRequestDto projectRequestDto) {
+    @PostMapping("/create/{userId}")
+    public ResponseEntity<?> createProject(@PathVariable Long userId,
+            @RequestBody ProjectRequestDto projectRequestDto) {
         ProjectResponseDto result = projectService.createProject(userId, projectRequestDto);
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/all/{userId}")
     public ResponseEntity<?> getProjectsForUser(@PathVariable Long userId) {
         List<ProjectResponseDto> projectResponseDtos = projectService.getProjectsForUser(userId);
         return ResponseEntity.ok(projectResponseDtos);
     }
 
-    @GetMapping("/user/{userId}/{projectId}")
+    @GetMapping("/one/{userId}/{projectId}")
     public ResponseEntity<?> getProjectById(@PathVariable Long userId, @PathVariable Long projectId) {
         ProjectResponseDto result = projectService.getProjectById(userId, projectId);
         return ResponseEntity.ok(result);
     }
 
-    @PutMapping("/user/{userId}/{projectId}")
-    public ResponseEntity<?> updateProject(@PathVariable Long userId, @PathVariable Long projectId, @RequestBody ProjectRequestDto projectRequestDto) {
+    @PutMapping("/update/{userId}/{projectId}")
+    public ResponseEntity<?> updateProject(@PathVariable Long userId, @PathVariable Long projectId,
+            @RequestBody ProjectRequestDto projectRequestDto) {
         ProjectResponseDto updatedProject = projectService.updateProject(userId, projectId, projectRequestDto);
         return ResponseEntity.ok(updatedProject);
     }
 
-    @DeleteMapping("/user/{userId}/{projectId}")
+    @DeleteMapping("/delete/{userId}/{projectId}")
     public void deleteProject(@PathVariable Long userId, @PathVariable Long projectId) {
         projectService.deleteProject(userId, projectId);
     }
