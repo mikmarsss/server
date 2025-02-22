@@ -37,7 +37,7 @@ public class ProjectService {
         project.setCreatedAt(LocalDateTime.now());
         project.setUpdatedAt(LocalDateTime.now());
         project.setName("Новый проект");
-        project.setData(null); // Пустая дата
+        project.setData(null);
 
         Project savedProject = projectRepository.save(project);
         return projectResponseMapper.toDto(savedProject);
