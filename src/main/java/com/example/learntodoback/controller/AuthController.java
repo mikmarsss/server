@@ -5,6 +5,7 @@ import com.example.learntodoback.dto.auth.AuthResponseDto;
 import com.example.learntodoback.dto.auth.RegisterRequestDto;
 import com.example.learntodoback.dto.auth.RegisterResponseDto;
 import com.example.learntodoback.service.AuthService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,14 +20,14 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequestDto request) {
-        RegisterResponseDto token = authService.register(request);
+    public ResponseEntity<?> register(@RequestBody RegisterRequestDto request, HttpServletResponse response) {
+        RegisterResponseDto token = authService.register(request, response);
         return ResponseEntity.ok(token);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthRequestDto request) {
-        AuthResponseDto token = authService.login(request);
+    public ResponseEntity<?> login(@RequestBody AuthRequestDto request, HttpServletResponse response) {
+        AuthResponseDto token = authService.login(request, response);
         return ResponseEntity.ok(token);
     }
 }
