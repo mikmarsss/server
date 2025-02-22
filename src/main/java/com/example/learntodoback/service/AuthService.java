@@ -8,6 +8,7 @@ import com.example.learntodoback.entity.User;
 import com.example.learntodoback.exception.AuthException;
 import com.example.learntodoback.repository.UserRepository;
 import com.example.learntodoback.util.JwtUtil;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,7 +22,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    public RegisterResponseDto register(RegisterRequestDto request) {
+    public RegisterResponseDto register(RegisterRequestDto request, HttpServletResponse response) {
         if (userRepository.existsByUsername(request.getUsername())
                 || userRepository.existsByEmail(request.getEmail())) {
             throw new AuthException("Имя пользователя или адрес электронной почты уже занято!");
@@ -41,12 +42,12 @@ public class AuthService {
                 .email(request.getEmail())
                 .token(token)
                 .build();
-
+        response.setHeader("Authorization", "Bearer " + token);
         log.info("JWT Token: {}", token);
         return registerResponseDto;
     }
 
-    public AuthResponseDto login(AuthRequestDto request) {
+    public AuthResponseDto login(AuthRequestDto request, HttpServletResponse response) {
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new AuthException("Неверное имя пользователя или пароль"));
 
@@ -59,6 +60,7 @@ public class AuthService {
                 .username(request.getUsername())
                 .token(token)
                 .build();
+        response.setHeader("Authorization", "Bearer " + token);
 
         log.info("JWT Token: {}", token);
         return authResponseDto;
