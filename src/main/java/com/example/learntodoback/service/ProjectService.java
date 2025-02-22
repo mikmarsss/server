@@ -28,18 +28,18 @@ public class ProjectService {
      * Создание нового проекта для пользователя по ID.
      */
     @Transactional
-    public ProjectResponseDto createProject(Long userId, ProjectRequestDto projectRequestDto) {
+    public ProjectResponseDto createProject(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException("Пользователь не найден"));
 
-        Project project = projectRequestMapper.toEntity(projectRequestDto);
+        Project project = new Project();
         project.setUser(user);
         project.setCreatedAt(LocalDateTime.now());
         project.setUpdatedAt(LocalDateTime.now());
-        project.setData(projectRequestDto.getData());
+        project.setName("Новый проект");
+        project.setData(null);
 
         Project savedProject = projectRepository.save(project);
-
         return projectResponseMapper.toDto(savedProject);
     }
 
