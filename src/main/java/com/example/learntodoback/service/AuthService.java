@@ -22,7 +22,8 @@ public class AuthService {
     private final JwtUtil jwtUtil;
 
     public RegisterResponseDto register(RegisterRequestDto request) {
-        if (userRepository.existsByUsername(request.getUsername()) || userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByUsername(request.getUsername())
+                || userRepository.existsByEmail(request.getEmail())) {
             throw new AuthException("Имя пользователя или адрес электронной почты уже занято!");
         }
 
