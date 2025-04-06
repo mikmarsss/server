@@ -1,55 +1,26 @@
 package com.example.learntodoback.service;
 
-import com.example.learntodoback.dto.schema.*;
+import com.example.learntodoback.dto.response.ValidationResponseDto;
+import com.example.learntodoback.dto.schema.validator.CircuitValidator;
+import com.example.learntodoback.dto.schema.ConnectionDto;
+import com.example.learntodoback.dto.schema.factory.CircuitValidationFactory;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class SchemaValidatorService {
+    private final CircuitValidationFactory validationFactory;
 
-    private final List<SchemaDto> validSchemas = List.of(
-            new SchemaDto(
-                    List.of(
-                            new ComponentDto("1", "battery", List.of("+", "-")),
-                            new ComponentDto("2", "led", List.of("+", "-")),
-                            new ComponentDto("3", "button", List.of("0", "0"))
-                    ),
-                    List.of(
-                            new ConnectionDto(new ConnectionPoint("1", "+"), new ConnectionPoint("3", "0")),
-                            new ConnectionDto(new ConnectionPoint("3", "0"), new ConnectionPoint("2", "+")),
-                            new ConnectionDto(new ConnectionPoint("2", "-"), new ConnectionPoint("1", "-"))
-                    )
-            ),
-            new SchemaDto(
-                    List.of(
-                            new ComponentDto("1", "battery", List.of("+", "-")),
-                            new ComponentDto("2", "led", List.of("+", "-"))
-                    ),
-                    List.of(
-                            new ConnectionDto(new ConnectionPoint("1", "+"), new ConnectionPoint("2", "+")),
-                            new ConnectionDto(new ConnectionPoint("2", "-"), new ConnectionPoint("1", "-"))
-                    )
-            ),
-            new SchemaDto(
-                    List.of(
-                            new ComponentDto("1", "bigbattery", List.of("+", "-")),
-                            new ComponentDto("2", "fan", List.of("+", "-")),
-                            new ComponentDto("3", "button", List.of("0", "0"))
-                    ),
-                    List.of(
-                            new ConnectionDto(new ConnectionPoint("1", "+"), new ConnectionPoint("3", "0")),
-                            new ConnectionDto(new ConnectionPoint("3", "0"), new ConnectionPoint("2", "+")),
-                            new ConnectionDto(new ConnectionPoint("2", "-"), new ConnectionPoint("1", "-"))
-                    )
-            )
-    );
-
-    public SchemaValidationDto validateSchema(SchemaDto receivedSchema) {
-        if (validSchemas.contains(receivedSchema)) {
-            return new SchemaValidationDto(true, "Схема верна.");
-        } else {
-            return new SchemaValidationDto(false, "Получена неверная схема.");
+    public ValidationResponseDto validateCircuit(List<ConnectionDto> connections) {
+        for (CircuitValidator validator : validationFactory.getValidators()) {
+            ValidationResponseDto result = validator.validate(connections);
+            if (!result.isValid()) {
+                return result;
+            }
         }
+        return new ValidationResponseDto(true, "Цепь корректна");
     }
 }
