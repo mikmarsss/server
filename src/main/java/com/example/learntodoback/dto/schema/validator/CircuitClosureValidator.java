@@ -1,6 +1,5 @@
 package com.example.learntodoback.dto.schema.validator;
 
-import com.example.learntodoback.dto.response.ValidationResponseDto;
 import com.example.learntodoback.dto.schema.ConnectionDto;
 import org.springframework.stereotype.Component;
 
@@ -8,23 +7,27 @@ import java.util.*;
 
 @Component
 public class CircuitClosureValidator implements CircuitValidator {
-
     @Override
-    public ValidationResponseDto validate(List<ConnectionDto> connections) {
+    public boolean validate(List<ConnectionDto> connections) {
+        boolean isValid = true;
+
         if (connections.isEmpty()) {
-            return new ValidationResponseDto(false, "Список соединений пуст");
+            return false;
         }
 
         Map<Integer, List<Integer>> graph = buildGraph(connections);
 
-        if (!isGraphConnected(graph) || !hasAllEvenDegrees(graph)) {
-            return new ValidationResponseDto(false, "Цепь не замкнута");
+        if (!isGraphConnected(graph)) {
+            isValid = false;
+        }
+        if (!hasAllEvenDegrees(graph)) {
+            isValid = false;
         }
 
-        return new ValidationResponseDto(true, "Цепь замкнута");
+        return isValid;
     }
 
-    private static Map<Integer, List<Integer>> buildGraph(List<ConnectionDto> connections) {
+    private Map<Integer, List<Integer>> buildGraph(List<ConnectionDto> connections) {
         Map<Integer, List<Integer>> graph = new HashMap<>();
 
         for (ConnectionDto conn : connections) {
@@ -37,7 +40,7 @@ public class CircuitClosureValidator implements CircuitValidator {
         return graph;
     }
 
-    private static boolean isGraphConnected(Map<Integer, List<Integer>> graph) {
+    private boolean isGraphConnected(Map<Integer, List<Integer>> graph) {
         if (graph.isEmpty()) return false;
 
         Set<Integer> visited = new HashSet<>();
@@ -59,7 +62,7 @@ public class CircuitClosureValidator implements CircuitValidator {
         return visited.size() == graph.size();
     }
 
-    private static boolean hasAllEvenDegrees(Map<Integer, List<Integer>> graph) {
+    private boolean hasAllEvenDegrees(Map<Integer, List<Integer>> graph) {
         return graph.values().stream()
                 .allMatch(neighbors -> neighbors.size() % 2 == 0);
     }

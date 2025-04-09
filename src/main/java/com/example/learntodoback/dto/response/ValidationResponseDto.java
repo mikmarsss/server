@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -12,4 +15,6 @@ import lombok.Setter;
 public class ValidationResponseDto {
     private boolean isValid;
     private String message;
+    private List<String> uniqueId = new ArrayList<>();
+    private String additional;
 }

@@ -21,7 +21,7 @@ public class ComponentConnectionTransformer {
             int targetElementId = conn.getTargetElementId();
 
             ComponentConnectionDto dto = new ComponentConnectionDto(sourceElementId);
-            dto.setComponentId(conn.getUniqueElementId());
+            dto.setUniqueElementId(conn.getUniqueElementId());
             dto.setSourceField(conn.getSourceContactId());
             dto.setTargetField(conn.getTargetContactId());
             dto.setTargetElementId(targetElementId);
@@ -31,14 +31,7 @@ public class ComponentConnectionTransformer {
                 ConnectionDto in = incomingToSource.getFirst();
                 dto.setSourceOutputField(in.getTargetContactId());
                 dto.setTargetOutputElementId(in.getSourceElementId());
-
-                List<ConnectionDto> incomingToTarget = incomingMap.getOrDefault(targetElementId, Collections.emptyList());
-                for (ConnectionDto inTarget : incomingToTarget) {
-                    if (inTarget.getSourceElementId() == in.getSourceElementId()) {
-                        dto.setTargetOutputField(inTarget.getTargetContactId());
-                        break;
-                    }
-                }
+                dto.setTargetOutputField(in.getSourceContactId());
             }
 
             result.add(dto);

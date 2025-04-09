@@ -10,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ComponentConnectionDto {
-    private String componentId;
+    private String uniqueElementId;
     private int elementId;
     private String sourceField;
     private String targetField;
