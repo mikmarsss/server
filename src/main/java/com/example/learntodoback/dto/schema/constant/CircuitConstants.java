@@ -7,4 +7,6 @@ public class CircuitConstants {
     public static final String NEUTRAL_2 = "neutral2";
     public static final String NEUTRAL_3 = "neutral3";
     public static final String NEUTRAL_4 = "neutral4";
+    public static final String DO_ACTION = "doAction";
+    public static final String DONT_DO_ACTION = "dontDoAction";
 }

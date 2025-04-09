@@ -1,6 +1,5 @@
 package com.example.learntodoback.dto.schema.validator;
 
-import com.example.learntodoback.dto.response.ValidationResponseDto;
 import com.example.learntodoback.dto.schema.ComponentConnectionDto;
 import com.example.learntodoback.dto.schema.ComponentConnectionTransformer;
 import com.example.learntodoback.dto.schema.ConnectionDto;
@@ -17,14 +16,16 @@ import static com.example.learntodoback.dto.schema.constant.CircuitConstants.*;
 import static com.example.learntodoback.enums.Components.LED;
 import static com.example.learntodoback.enums.Components.RGB_LED;
 
-@Component
 @RequiredArgsConstructor
+@Component
 public class ComponentConnectionValidator implements CircuitValidator {
     private final ComponentConnectionTransformer connectionTransformer;
 
     @Override
-    public ValidationResponseDto validate(List<ConnectionDto> connections) {
+    public boolean validate(List<ConnectionDto> connections) {
         List<ComponentConnectionDto> components = connectionTransformer.transform(connections);
+
+        boolean isValid = true;
 
         for (ComponentConnectionDto dto : components) {
             Components component = Components.fromId(dto.getElementId());
@@ -34,30 +35,41 @@ public class ComponentConnectionValidator implements CircuitValidator {
                 case BATTERY_3_0_V:
                 case BATTERY_9_0_V:
                     if (!validateBattery(dto)) {
-                        return new ValidationResponseDto(false, "Неверное соединение для батарейки: " + component.getName());
+                        isValid = false;
                     }
                     break;
                 case LED:
                 case RGB_LED:
                     if (!validateLed(dto, components)) {
-                        return new ValidationResponseDto(false, "Неверное соединение для светодиода: " + component.getName());
+                        isValid = false;
                     }
                     break;
+                case VIBROGEAR:
+                case PIEZOELECTRIC:
+                case DIODE:
+                    if (!isValidPinFlow(dto.getSourceField(), dto.getTargetField()) &&
+                            isValidPinFlow(dto.getSourceOutputField(), dto.getTargetOutputField())) {
+                        isValid = false;
+                    }
                 case CAPACITOR:
                 case RESISTOR:
+                case PHOTORESISTOR:
                     if (!validateTwoNeutral(dto)) {
-                        return new ValidationResponseDto(false, "Неверное соединение для нейтрального компонента: " + component.getName());
+                        isValid = false;
                     }
                     break;
                 case BUTTON:
                     if (!validateButton(dto)) {
-                        return new ValidationResponseDto(false, "Неверное соединение для кнопки " + component.getName());
+                        isValid = false;
                     }
                     break;
+                case TRANSISTOR:
+                case SWITCHER:
+                case POTENTIOMETER:
+                    isValid = true;
             }
         }
-
-        return new ValidationResponseDto(true, "Компоненты соединены корректно");
+        return isValid;
     }
 
     private boolean validateBattery(ComponentConnectionDto dto) {
