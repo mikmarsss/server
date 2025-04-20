@@ -22,16 +22,16 @@ public class ComponentConnectionTransformer {
 
             ComponentConnectionDto dto = new ComponentConnectionDto(sourceElementId);
             dto.setUniqueElementId(conn.getUniqueElementId());
-            dto.setSourceField(conn.getSourceContactId());
-            dto.setTargetField(conn.getTargetContactId());
+            dto.setSourceField(conn.getSourceContact().getId());
+            dto.setTargetField(conn.getTargetContact().getId());
             dto.setTargetElementId(targetElementId);
 
             List<ConnectionDto> incomingToSource = incomingMap.getOrDefault(sourceElementId, Collections.emptyList());
             if (!incomingToSource.isEmpty()) {
                 ConnectionDto in = incomingToSource.getFirst();
-                dto.setSourceOutputField(in.getTargetContactId());
+                dto.setSourceOutputField(in.getTargetContact().getId());
                 dto.setTargetOutputElementId(in.getSourceElementId());
-                dto.setTargetOutputField(in.getSourceContactId());
+                dto.setTargetOutputField(in.getSourceContact().getId());
             }
 
             result.add(dto);

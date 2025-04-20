@@ -13,6 +13,6 @@ public class ConnectionDto {
     private String uniqueElementId;
     private int sourceElementId;
     private int targetElementId;
-    private String sourceContactId;
-    private String targetContactId;
+    private SourceContactDto sourceContact;
+    private TargetContactDto targetContact;
 }
