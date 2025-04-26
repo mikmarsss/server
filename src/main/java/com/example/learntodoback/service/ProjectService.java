@@ -21,7 +21,6 @@ import java.util.List;
 public class ProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
-    private final ProjectRequestMapper projectRequestMapper;
     private final ProjectResponseMapper projectResponseMapper;
 
     /**
@@ -38,6 +37,7 @@ public class ProjectService {
         project.setUpdatedAt(LocalDateTime.now());
         project.setName("Новый проект");
         project.setData(null);
+        project.setElements(null);
 
         Project savedProject = projectRepository.save(project);
         return projectResponseMapper.toDto(savedProject);
@@ -81,6 +81,7 @@ public class ProjectService {
         project.setName(projectRequestDto.getName());
         project.setUpdatedAt(LocalDateTime.now());
         project.setData(projectRequestDto.getData());
+        project.setElements(projectRequestDto.getElements());
 
         Project updatedProject = projectRepository.save(project);
 
