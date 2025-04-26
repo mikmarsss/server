@@ -34,4 +34,7 @@ public class Project {
 
     @Column(name = "data", columnDefinition = "TEXT")
     private String data;
+
+    @Column(name = "elements")
+    private String elements;
 }

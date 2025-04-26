@@ -8,6 +8,6 @@
     <include file="changeset/V0001_create_users.xml" relativeToChangelogFile="true"/>
     <include file="changeset/V0002_create_projects.xml" relativeToChangelogFile="true"/>
     <include file="changeset/V0003_alter_projects.xml" relativeToChangelogFile="true"/>
-
+    <include file="changeset/V0004_add_new_field_projects.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

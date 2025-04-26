@@ -8,4 +8,5 @@ import lombok.Setter;
 public class ProjectRequestDto {
     private String name;
     private String data;
+    private String elements;
 }
