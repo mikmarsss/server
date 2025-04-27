@@ -1,5 +1,6 @@
 package com.example.learntodoback.service;
 
+import com.example.learntodoback.dto.ValidationRequest;
 import com.example.learntodoback.dto.response.ValidationResponseDto;
 import com.example.learntodoback.dto.schema.ConnectionDto;
 import com.example.learntodoback.dto.schema.factory.CircuitValidationFactory;
@@ -18,7 +19,8 @@ import static com.example.learntodoback.dto.schema.constant.CircuitConstants.DO_
 public class SchemaValidatorService {
     private final CircuitValidationFactory validationFactory;
 
-    public ValidationResponseDto validateCircuit(List<ConnectionDto> connections) {
+    public ValidationResponseDto validateCircuit(ValidationRequest validationRequest) {
+        List<ConnectionDto> connections = validationRequest.getConnections();
         List<String> componentsId = getComponentsAction(connections);
 
         for (CircuitValidator validator : validationFactory.getValidators()) {
