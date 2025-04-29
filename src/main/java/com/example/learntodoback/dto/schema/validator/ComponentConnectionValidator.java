@@ -73,6 +73,11 @@ public class ComponentConnectionValidator implements CircuitValidator {
     }
 
     private boolean validateBattery(ComponentConnectionDto dto) {
+        if (dto.getSourceField().equals(dto.getTargetOutputField())
+                || dto.getTargetField().equals(dto.getSourceOutputField())) {
+            return false;
+        }
+
         return isValidPinFlow(dto.getSourceField(), dto.getTargetField()) &&
                 isValidPinFlow(dto.getSourceOutputField(), dto.getTargetOutputField());
     }
@@ -104,7 +109,11 @@ public class ComponentConnectionValidator implements CircuitValidator {
             }
         }
 
-        return isNormalFlow;
+        return (
+                (dto.getSourceField().equals(PLUS) && dto.getTargetField().equals(MINUS)) ||
+                        (dto.getSourceField().equals(MINUS) && dto.getTargetField().equals(PLUS)) ||
+                        isNeutral(dto.getTargetField())
+        );
     }
 
     private boolean validateTwoNeutral(ComponentConnectionDto dto) {
