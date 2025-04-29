@@ -10,7 +10,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ConnectionDto {
-    private String uniqueElementId;
+    private String uniqueSourceElementId;
+    private String uniqueTargetElementId;
     private int sourceElementId;
     private int targetElementId;
     private SourceContactDto sourceContact;

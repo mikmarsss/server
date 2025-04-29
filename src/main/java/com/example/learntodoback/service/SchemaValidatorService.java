@@ -49,7 +49,7 @@ public class SchemaValidatorService {
         for (ConnectionDto connectionDto : connections) {
             Components component = Components.fromId(connectionDto.getSourceElementId());
             if (component.getAction().equals(DO_ACTION)) {
-                uniqueId.add(connectionDto.getUniqueElementId());
+                uniqueId.add(connectionDto.getUniqueSourceElementId());
             }
         }
         return uniqueId;
