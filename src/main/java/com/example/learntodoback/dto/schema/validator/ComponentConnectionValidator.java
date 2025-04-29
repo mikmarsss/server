@@ -112,7 +112,9 @@ public class ComponentConnectionValidator implements CircuitValidator {
         return (
                 (dto.getSourceField().equals(PLUS) && dto.getTargetField().equals(MINUS)) ||
                         (dto.getSourceField().equals(MINUS) && dto.getTargetField().equals(PLUS)) ||
-                        isNeutral(dto.getTargetField())
+                        (dto.getSourceOutputField().equals(MINUS) && dto.getTargetOutputField().equals(PLUS)) ||
+                        (dto.getTargetOutputField().equals(MINUS) && dto.getSourceOutputField().equals(PLUS)) ||
+                        isNormalFlow
         );
     }
 
