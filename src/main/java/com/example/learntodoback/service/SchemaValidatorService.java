@@ -2,6 +2,8 @@ package com.example.learntodoback.service;
 
 import com.example.learntodoback.dto.ValidationRequest;
 import com.example.learntodoback.dto.response.ValidationResponseDto;
+import com.example.learntodoback.dto.schema.ComponentConnectionDto;
+import com.example.learntodoback.dto.schema.ComponentConnectionTransformer;
 import com.example.learntodoback.dto.schema.ConnectionDto;
 import com.example.learntodoback.dto.schema.factory.CircuitValidationFactory;
 import com.example.learntodoback.dto.schema.validator.CircuitValidator;
@@ -18,6 +20,7 @@ import static com.example.learntodoback.dto.schema.constant.CircuitConstants.DO_
 @RequiredArgsConstructor
 public class SchemaValidatorService {
     private final CircuitValidationFactory validationFactory;
+    private final ComponentConnectionTransformer connectionTransformer;
 
     public ValidationResponseDto validateCircuit(ValidationRequest validationRequest) {
         List<ConnectionDto> connections = validationRequest.getConnections();
@@ -45,11 +48,12 @@ public class SchemaValidatorService {
 
     public List<String> getComponentsAction(List<ConnectionDto> connections) {
         List<String> uniqueId = new ArrayList<>();
+        List<ComponentConnectionDto> components = connectionTransformer.transform(connections);
 
-        for (ConnectionDto connectionDto : connections) {
-            Components component = Components.fromId(connectionDto.getSourceElementId());
+        for (ComponentConnectionDto connectionDto : components) {
+            Components component = Components.fromId(connectionDto.getElementId());
             if (component.getAction().equals(DO_ACTION)) {
-                uniqueId.add(connectionDto.getUniqueSourceElementId());
+                uniqueId.add(connectionDto.getUniqueElementId());
             }
         }
         return uniqueId;
