@@ -15,6 +15,32 @@ import java.util.Set;
 public class LedValidator {
 
     private static final Set<String> NEUTRAL_CONTACTS = Set.of("neutral1", "neutral2", "neutral3", "neutral4");
+    public Set<String> getLitLeds(GraphDto graph) {
+        NodeDto batteryNode = graph.getNodes().values().stream()
+                .filter(n -> n.getComponents().name().startsWith("BATTERY"))
+                .findFirst()
+                .orElse(null);
+
+        if (batteryNode == null) {
+            return Set.of(); // Нет батареи — ничего не может загореться
+        }
+
+        Set<String> litLeds = new HashSet<>();
+
+        for (NodeDto ledNode : graph.getNodes().values()) {
+            if (ledNode.getComponents() != Components.LED && ledNode.getComponents() != Components.RGB_LED) continue;
+
+            boolean minusConnected = dfsWithContacts(graph, batteryNode, "minus", ledNode, "minus", new HashSet<>());
+            if (!minusConnected) continue;
+
+            boolean plusConnected = dfsWithContacts(graph, ledNode, "plus", batteryNode, "plus", new HashSet<>());
+            if (!plusConnected) continue;
+
+            litLeds.add(ledNode.getUniqueId());
+        }
+
+        return litLeds;
+    }
 
     public boolean isValidCircuit(GraphDto graph) {
         NodeDto batteryNode = graph.getNodes().values().stream()
