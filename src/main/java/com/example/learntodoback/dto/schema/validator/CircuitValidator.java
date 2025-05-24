@@ -1,9 +1,10 @@
 package com.example.learntodoback.dto.schema.validator;
 
-import com.example.learntodoback.dto.schema.ConnectionDto;
+import com.example.learntodoback.dto.schema.graph.GraphDto;
 
-import java.util.List;
+import java.util.Set;
 
 public interface CircuitValidator {
-    boolean validate(List<ConnectionDto> connections);
+    boolean isValid(GraphDto graphDto);
+    Set<String> getIds(GraphDto graphDto);
 }

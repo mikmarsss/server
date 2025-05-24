@@ -1,69 +1,53 @@
 package com.example.learntodoback.dto.schema.validator;
 
-import com.example.learntodoback.dto.schema.ConnectionDto;
+import com.example.learntodoback.dto.schema.graph.GraphDto;
+import com.example.learntodoback.dto.schema.graph.EdgeDto;
+import com.example.learntodoback.dto.schema.graph.NodeDto;
+import com.example.learntodoback.enums.Components;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 
 @Component
-public class CircuitClosureValidator implements CircuitValidator {
+public class CircuitClosureValidator implements CircuitValidator{
     @Override
-    public boolean validate(List<ConnectionDto> connections) {
-        boolean isValid = true;
-
-        if (connections.isEmpty()) {
-            return false;
-        }
-
-        Map<Integer, List<Integer>> graph = buildGraph(connections);
-
-        if (!isGraphConnected(graph)) {
-            isValid = false;
-        }
-        if (!hasAllEvenDegrees(graph)) {
-            isValid = false;
-        }
-
-        return isValid;
+    public Set<String> getIds(GraphDto graphDto){
+        return null;
     }
 
-    private Map<Integer, List<Integer>> buildGraph(List<ConnectionDto> connections) {
-        Map<Integer, List<Integer>> graph = new HashMap<>();
+    @Override
+    public boolean isValid(GraphDto graph) {
+        Map<NodeDto, Set<String>> batteryContacts = new HashMap<>();
 
-        for (ConnectionDto conn : connections) {
-            graph.computeIfAbsent(conn.getSourceElementId(), k -> new ArrayList<>())
-                    .add(conn.getTargetElementId());
-            graph.computeIfAbsent(conn.getTargetElementId(), k -> new ArrayList<>())
-                    .add(conn.getSourceElementId());
+        for (NodeDto node : graph.getNodes().values()) {
+            if (isBattery(node.getComponents())) {
+                batteryContacts.put(node, new HashSet<>());
+            }
         }
 
-        return graph;
-    }
+        for (NodeDto node : graph.getNodes().values()) {
+            for (EdgeDto edge : node.getEdges()) {
+                if (isBattery(node.getComponents())) {
+                    batteryContacts.get(node).add(edge.getSourceContact());
+                }
+            }
 
-    private boolean isGraphConnected(Map<Integer, List<Integer>> graph) {
-        if (graph.isEmpty()) return false;
-
-        Set<Integer> visited = new HashSet<>();
-        Deque<Integer> stack = new ArrayDeque<>();
-        Integer start = graph.keySet().iterator().next();
-        stack.push(start);
-
-        while (!stack.isEmpty()) {
-            Integer node = stack.pop();
-            if (visited.add(node)) {
-                for (Integer neighbor : graph.get(node)) {
-                    if (!visited.contains(neighbor)) {
-                        stack.push(neighbor);
+            for (NodeDto potentialBattery : batteryContacts.keySet()) {
+                for (EdgeDto edge : node.getEdges()) {
+                    if (edge.getTarget().equals(potentialBattery)) {
+                        batteryContacts.get(potentialBattery).add(edge.getTargetContact());
                     }
                 }
             }
         }
 
-        return visited.size() == graph.size();
+        return batteryContacts.values().stream()
+                .allMatch(contacts -> contacts.contains("plus") && contacts.contains("minus"));
     }
 
-    private boolean hasAllEvenDegrees(Map<Integer, List<Integer>> graph) {
-        return graph.values().stream()
-                .allMatch(neighbors -> neighbors.size() % 2 == 0);
+    private static boolean isBattery(Components component) {
+        return component == Components.BATTERY_1_5_V ||
+                component == Components.BATTERY_3_0_V ||
+                component == Components.BATTERY_9_0_V;
     }
 }

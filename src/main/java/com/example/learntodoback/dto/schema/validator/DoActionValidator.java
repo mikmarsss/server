@@ -4,7 +4,6 @@ import com.example.learntodoback.dto.schema.graph.GraphDto;
 import com.example.learntodoback.dto.schema.graph.EdgeDto;
 import com.example.learntodoback.dto.schema.graph.NodeDto;
 import com.example.learntodoback.enums.Components;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
@@ -12,9 +11,8 @@ import java.util.Set;
 
 import static com.example.learntodoback.dto.schema.constant.CircuitConstants.*;
 
-@RequiredArgsConstructor
 @Component
-public class LedValidator implements CircuitValidator {
+public class DoActionValidator implements CircuitValidator {
 
     private static final Set<String> NEUTRAL_CONTACTS = Set.of(NEUTRAL_1, NEUTRAL_2, NEUTRAL_3, NEUTRAL_4);
 
@@ -32,7 +30,8 @@ public class LedValidator implements CircuitValidator {
         Set<String> litLeds = new HashSet<>();
 
         for (NodeDto ledNode : graph.getNodes().values()) {
-            if (ledNode.getComponents() != Components.LED && ledNode.getComponents() != Components.RGB_LED) continue;
+            if (ledNode.getComponents() != Components.PIEZOELECTRIC && ledNode.getComponents() != Components.VIBROGEAR)
+                continue;
 
             boolean minusConnected = dfsWithContacts(graph, batteryNode, MINUS, ledNode, MINUS, new HashSet<>());
             if (!minusConnected) continue;
@@ -54,12 +53,12 @@ public class LedValidator implements CircuitValidator {
                 .orElse(null);
 
         NodeDto ledNode = graph.getNodes().values().stream()
-                .filter(n -> n.getComponents() == Components.LED || n.getComponents() == Components.RGB_LED)
+                .filter(n -> n.getComponents() == Components.PIEZOELECTRIC || n.getComponents() == Components.VIBROGEAR)
                 .findFirst()
                 .orElse(null);
 
         if (batteryNode == null || ledNode == null) {
-            return false; // Нет батарейки или LED
+            return false;
         }
 
         // 1. Найти путь от батареи MINUS к LED MINUS
@@ -126,12 +125,6 @@ public class LedValidator implements CircuitValidator {
             return true;
         }
 
-        if ((currentNode.getComponents() == Components.LED || currentNode.getComponents() == Components.RGB_LED) &&
-                ((currentContact.equals(PLUS) && edgeSourceContact.equals(MINUS)) ||
-                        (currentContact.equals(MINUS) && edgeSourceContact.equals(PLUS)))) {
-            return true;
-        }
-
         if (NEUTRAL_CONTACTS.contains(currentContact)) {
             return true; // Нейтральные контакты допускают любые переходы
         }
@@ -143,12 +136,6 @@ public class LedValidator implements CircuitValidator {
                                                       String edgeTargetContact, String currentContact) {
         // Обратный обход — немного проще, проверяем, что переход из edgeSourceContact к currentContact разрешён
         if (edgeTargetContact.equals(currentContact)) {
-            return true;
-        }
-
-        if ((prevNode.getComponents() == Components.LED || prevNode.getComponents() == Components.RGB_LED) &&
-                ((edgeTargetContact.equals(PLUS) && currentContact.equals(MINUS)) ||
-                        (edgeTargetContact.equals(MINUS) && currentContact.equals(PLUS)))) {
             return true;
         }
 
