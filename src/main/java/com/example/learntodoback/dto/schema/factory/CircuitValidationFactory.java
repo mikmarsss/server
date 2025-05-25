@@ -1,8 +1,6 @@
 package com.example.learntodoback.dto.schema.factory;
 
-import com.example.learntodoback.dto.schema.validator.CircuitClosureValidator;
-import com.example.learntodoback.dto.schema.validator.CircuitValidator;
-import com.example.learntodoback.dto.schema.validator.ComponentConnectionValidator;
+import com.example.learntodoback.dto.schema.validator.*;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -16,10 +14,12 @@ public class CircuitValidationFactory {
 
     public CircuitValidationFactory(
             CircuitClosureValidator closureValidator,
-            ComponentConnectionValidator componentValidator
+            LedValidator ledValidator,
+            DoActionValidator doActionValidator
     ) {
         validators.add(closureValidator);
-        validators.add(componentValidator);
+        validators.add(ledValidator);
+        validators.add(doActionValidator);
     }
 
     public List<CircuitValidator> getValidators() {
